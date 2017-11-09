@@ -21,8 +21,17 @@
   text-align: center;
   text-shadow: 0 0 1px white; }
 
+#trilero h2 {
+  font-size: 6vmin; }
+
 #trilero img {
   box-shadow: 3px 3px 3px black;
   border-radius: 10px; }
+
+#trilero {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 100vmin; }
 
 /*# sourceMappingURL=style.css.map */
