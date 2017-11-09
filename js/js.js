@@ -134,7 +134,7 @@ Card.prototype.turnDown=function(){
 
 
 
-const TURN_DOWN_DELAY_MS=500;
+const TURN_DOWN_DELAY_MS=800;
 const FAIL_FLIP_DELAY_MS=500;
 function Game(){
 	this.element;
@@ -144,10 +144,15 @@ function Game(){
 	this.turnDownThread;
 	this.boundFlipEvent=this.flipEvent.bind(this);
 	this.resultMessage;
+	this.resetButton;
 }
 
+
 Game.prototype.createRandomCard=function(){
-	var randomCardConfig=CARDS[Math.floor(Math.random()*CARDS.length)];
+	var randomCardConfig=0
+	do{
+		randomCardConfig=CARDS[Math.floor(Math.random()*CARDS.length)];
+	}while(this.getCard(randomCardConfig.id));
 	return new Card(randomCardConfig);
 }
 
@@ -169,13 +174,13 @@ Game.prototype.createHeader=function(){
 }
 Game.prototype.createFooter=function(){
 
-	var button = this.createResetButton();
+	this.resetButton = this.createResetButton();
 	this.resultMessage=document.createElement("h3");
 	this.updateResultMessage();
 	var footer=document.createElement("div");
 	footer.classList.add("trilero-footer");
 	footer.appendChild(this.resultMessage);
-	footer.appendChild(button);
+	footer.appendChild(this.resetButton);
 	return footer
 }
 
@@ -218,6 +223,8 @@ Game.prototype.initialize=function(){
 Game.prototype.start=function(){
 	this.shuffle();
 	this.addFlipEvent();
+	if(this.turnDownThread!=0)
+		this.turnDownThread=0;
 }
 
 Game.prototype.shuffle=function(){
@@ -235,11 +242,12 @@ Game.prototype.flipAce=function(event){
 	var card=this.getCard(GOLD_ACE_ID);
 	card.flip();
 	this.updateResultMessage("¡Vaya, realmente estaba aquí!");
+	setTimeout(this.buttonEnable.bind(this),TURN_DOWN_DELAY_MS);
 }
 
 Game.prototype.flipEvent=function(event){
 	var target=event.target;
-	
+
 	if(target && target.matches("img")){
 		this.removeFlipEvent();
 		var card=this.getCard(target.id);
@@ -247,12 +255,20 @@ Game.prototype.flipEvent=function(event){
 		if(card.id==GOLD_ACE_ID){
 			this.counter++;
 			this.updateResultMessage("¡Has ganado!");
+			setTimeout(this.buttonEnable.bind(this),TURN_DOWN_DELAY_MS);
 		}
 		
 		if(card.id!=GOLD_ACE_ID){
 			setTimeout(this.flipAce.bind(this),FAIL_FLIP_DELAY_MS);
 		}
 	}
+}
+
+Game.prototype.buttonEnable=function(){
+	this.resetButton.removeAttribute("disabled");
+}
+Game.prototype.buttonDisable=function(){
+	this.resetButton.setAttribute("disabled","disabled");
 }
 
 Game.prototype.addFlipEvent=function(){
@@ -273,11 +289,14 @@ Game.prototype.updateResultMessage=function(message){
 }
 
 Game.prototype.reset=function(){
-	this.cards.forEach(function(card){
-			card.turnDown();
-		});
-	setTimeout(this.start.bind(this),TURN_DOWN_DELAY_MS);
-	this.updateResultMessage();
+	if(this.turnDownThread==0){
+		this.buttonDisable();
+		this.cards.forEach(function(card){
+				card.turnDown();
+			});
+		this.turnDownThread=setTimeout(this.start.bind(this),TURN_DOWN_DELAY_MS);
+		this.updateResultMessage();
+	}
 }
 
 
