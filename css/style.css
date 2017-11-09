@@ -35,6 +35,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  height: 100vmin; }
+  height: 100vmin;
+  box-sizing: border-box; }
 
 /*# sourceMappingURL=style.css.map */
