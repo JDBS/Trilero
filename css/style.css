@@ -1,0 +1,23 @@
+#trilero .tablero {
+  display: flex;
+  flex-direction: rows;
+  justify-content: space-around; }
+
+#trilero {
+  background-color: darkgreen;
+  border-style: solid;
+  border-radius: 6px; }
+
+#trilero button {
+  padding: 5px;
+  width: 100px;
+  margin-left: calc(50% - 50px);
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 30px; }
+
+#trilero h2, h3 {
+  text-align: center;
+  text-shadow: 0 0 1px white; }
+
+/*# sourceMappingURL=style.css.map */
