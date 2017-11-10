@@ -38,4 +38,9 @@ body {
   height: 100vmin;
   box-sizing: border-box; }
 
+#trilero .card {
+  display: flex;
+  justify-content: center;}
+
+
 /*# sourceMappingURL=style.css.map */

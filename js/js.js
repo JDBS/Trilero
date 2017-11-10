@@ -253,11 +253,23 @@ Game.prototype.buttonDisable=function(){
 	this.resetButton.setAttribute("disabled","disabled");
 }
 
+Game.prototype.matches=function(target,id){
+	if(target){
+		if(target.matches){
+			return target.matches(id);
+		}
+		if(target.msMatchesSelector){
+			return target.msMatchesSelector(id);
+		}
+	}
+}
+
 /* Flip event definition */
 Game.prototype.flipEvent=function(event){
 	var target=event.target;
 
-	if(target && target.matches("img")){
+	if(this.matches(target,"img")){
+
 		this.removeFlipEvent();
 		var card=this.getCard(target.id);
 		card.flip();
