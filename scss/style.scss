@@ -6,6 +6,7 @@ body{
 	display:flex;
 	flex-direction:rows;
 	justify-content: space-around;
+	flex-wrap:wrap;
 }
 #trilero{
 	background-color:darkgreen;
@@ -37,6 +38,11 @@ body{
 	display:flex;
 	flex-direction:column;
 	justify-content: space-around;
-	height:100vmin;
+	min-height:100vmin;
 	box-sizing:border-box;
+}
+
+#trilero .card {
+  display: flex;
+  justify-content: center;
 }

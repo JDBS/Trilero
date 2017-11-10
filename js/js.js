@@ -141,6 +141,7 @@ Card.prototype.turnDown=function(){
 
 
 /* Game definition */
+const DEFAULT_CARDS=3;	//Default cards definition
 const TURN_DOWN_DELAY_MS=800; //Time for card to flip
 const FAIL_FLIP_DELAY_MS=500; //Time between a fail and Gold Ace flip
 function Game(){
@@ -164,9 +165,9 @@ Game.prototype.initialize=function(){
 	//DOM Elements
 	this.element=document.createElement("div");
 	this.element.classList.add("tablero");
-	this.cards.push(this.createRandomCard());
-	this.cards.push(this.createRandomCard());
 	this.cards.push(this.createGoldAceCard());
+	this.cards.push(this.createRandomCard());
+	this.cards.push(this.createRandomCard());
 	this.cards.forEach(function(card){
 			var cardElement=card.getCard();
 			this.element.appendChild(cardElement);
@@ -193,6 +194,51 @@ Game.prototype.createResetButton=function(){
 	return button;
 }
 
+
+Game.prototype.createOption=function(text, value, defaultChoice){
+	var option=document.createElement("option");
+	option.setAttribute("value",value);
+	option.innerHTML=text;
+	if(defaultChoice)
+		option.setAttribute("selected","selected");
+	return option;
+}
+
+Game.prototype.selectEvent=function(event){
+	var target=event.target;
+	var value="unknown";
+	if(target){
+		if(target.matches){
+			if(target.matches("select"));
+				value=target.value;
+		}
+		if(target.msMatchesSelector){
+			if(target.msMatchesSelector("select"));
+				value=target.value;
+		}
+	}
+	this.setDifficulty(value);
+}
+
+
+/* Interface Definition */
+Game.prototype.createSelect=function(){
+	var select=document.createElement("select");
+	var easy =this.createOption("facil","easy");
+	var normal =this.createOption("normal","normal",true);
+	var hard =this.createOption("dificil","hard");
+	var veryHard =this.createOption("muy dificil","very hard");
+
+	select.appendChild(easy);
+	select.appendChild(normal);
+	select.appendChild(hard);
+	select.appendChild(veryHard);
+
+	select.addEventListener("change",this.selectEvent.bind(this),true);
+	
+	return select;
+}
+
 Game.prototype.createHeader=function(){
 	const TITLE="TRILERO";
 	var h2 = document.createElement("h2");
@@ -204,15 +250,16 @@ Game.prototype.createHeader=function(){
 }
 
 Game.prototype.createFooter=function(){
-
 	this.resetButton = this.createResetButton();
 	this.resultMessage=document.createElement("h3");
 	this.updateResultMessage();
+	var select = this.createSelect();
 	var footer=document.createElement("div");
 	footer.classList.add("trilero-footer");
 	footer.appendChild(this.resultMessage);
 	footer.appendChild(this.resetButton);
-	return footer
+	footer.appendChild(select);
+	return footer;
 }
 
 Game.prototype.createGoldAceCard=function(){
@@ -323,6 +370,37 @@ Game.prototype.start=function(){
 	this.addFlipEvent();
 	if(this.turnDownThread!=0)
 		this.turnDownThread=0;
+}
+
+Game.prototype.setCardsCount=function(count){
+	while(this.cards.length<count){
+		var newCard = this.createRandomCard();
+		this.element.appendChild(newCard.getCard());
+		this.cards.push(newCard);
+	}
+	while(this.cards.length>count){
+		var cardToDelete = this.cards.pop();
+		var element=cardToDelete.getCard();
+		this.element.removeChild(element);
+	}
+}
+
+Game.prototype.setDifficulty=function(difficulty){
+	var cardsCount=DEFAULT_CARDS;
+	if(difficulty=="easy"){
+		cardsCount=2
+	}
+	if(difficulty=="normal"){
+		cardsCount=3
+	}
+	if(difficulty=="hard"){
+		cardsCount=4
+	}
+	if(difficulty=="very hard"){
+		cardsCount=5
+	}
+
+	this.setCardsCount(cardsCount);
 }
 
 /* Restart de game */
